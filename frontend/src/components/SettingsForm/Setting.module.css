@@ -11,6 +11,9 @@
   width: 35%;
 }
 .learn {
-  margin: 0 .3rem;
+  margin: 0 0.3rem;
   font-size: 12px;
+}
+.learn:hover {
+  cursor: help;
 }

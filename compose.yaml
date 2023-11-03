@@ -35,11 +35,10 @@ services:
     environment:
       - stage=docker
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5100/health || exit 1"]
-      interval: 1m30s
-      timeout: 30s
+      test: curl -f http://jf-backend:5100/health || exit 1
+      interval: 30s
+      timeout: 10s
       retries: 5
-      start_period: 30s
 
   celery:
     build: ./backend
