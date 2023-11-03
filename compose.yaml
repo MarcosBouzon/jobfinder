@@ -1,0 +1,114 @@
+name: jobfinder
+
+services:
+  nginx:
+    build:
+      context: ./frontend
+      args:
+        - REACT_APP_STAGE=docker
+    container_name: jf-nginx
+    hostname: nginx
+    restart: always
+    ports:
+      - 9090:9090
+    networks:
+      - jobfinder
+    command: ["nginx", "-g", "daemon off;"]
+    environment:
+      - REACT_APP_STAGE=docker
+
+  app:
+    build: ./backend
+    container_name: jf-backend
+    hostname: jobfinder
+    restart: always
+    ports:
+      - 5100:5100
+    networks:
+      - jobfinder
+    volumes:
+      - ./backend/app/:/jobfinder/app/
+    command: "flask run -h 0.0.0.0 -p 5100 --debug"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      - stage=docker
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5100/health || exit 1"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
+  celery:
+    build: ./backend
+    container_name: jf-celery
+    hostname: jf-celery
+    restart: always
+    networks:
+      - jobfinder
+    volumes:
+      - ./backend/app/:/jobfinder/app/
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: watchmedo auto-restart --directory=./ --pattern="*.py" --recursive -- celery -A app.celery worker -B -l info --purge
+    environment:
+      - stage=docker
+
+  mongodb:
+    image: mongo
+    container_name: jf-mongodb
+    hostname: jf-mongodb
+    restart: always
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 5s
+    networks:
+      - jobfinder
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongodb/data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  redis:
+    image: redis:latest
+    container_name: jf-redis
+    hostname: jf-redis
+    # restart: always
+    healthcheck:
+      test: "redis-cli PING"
+      interval: 1m30s
+      retries: 10
+      start_period: 15s
+    ports:
+      - 16379:6379
+    networks:
+      - jobfinder
+
+  selenium:
+    container_name: jf-selenium
+    hostname: jf-selenium
+    image: selenium/standalone-firefox:latest
+    shm_size: 2
+    networks:
+      - jobfinder
+    ports:
+      - 4444:4444
+      - 7900:7900
+    environment:
+      SE_OPTS: "--session-request-timeout 500 --session-timeout 500"
+
+networks:
+  jobfinder:
+    driver: bridge
+    attachable: true

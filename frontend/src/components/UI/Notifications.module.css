@@ -1,0 +1,12 @@
+.wrapper {
+  position: sticky;
+  top: 5rem;
+  z-index: 50;
+}
+.notifications {
+  position: absolute;
+  overflow: hidden;
+  width: 100%;
+  float: right;
+}
+

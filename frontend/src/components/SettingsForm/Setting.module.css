@@ -1,0 +1,16 @@
+.control {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 1rem;
+  justify-content: space-between;
+  align-items: center;
+}
+.control-small {
+  width: 35%;
+}
+.learn {
+  margin: 0 .3rem;
+  font-size: 12px;
+}

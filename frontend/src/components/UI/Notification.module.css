@@ -1,0 +1,68 @@
+.notification {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  right: -100%;
+  width: 25rem;
+  margin: 1rem;
+  box-shadow: 1px 3px 4px #00251e8a;
+  background-color: #fff;
+  z-index: 200;
+  transition: right 0.15s ease-out;
+}
+.notification.show {
+  right: -77%;
+  transition: right 0.2s ease-out;
+}
+.notification.hidden {
+  display: none;
+}
+
+.notification .type-wrapper {
+  display: flex;
+  width: 10%;
+  color: #fff;
+  justify-content: center;
+  align-items: center;
+}
+.notification .type-wrapper.bg-success {
+  background-color: #004d40;
+}
+.notification .type-wrapper.bg-warning {
+  background-color: #ffa000;
+}
+.notification .type-wrapper.bg-error {
+  background-color: #bf360c;
+}
+
+.notification .content {
+  position: relative;
+  width: 80%;
+  padding: 0.5rem 1rem;
+}
+.notification .content .close {
+  position: absolute;
+  right: 0;
+  cursor: pointer;
+}
+.notification .content h4 {
+  margin: 0.5rem 0 0 0;
+}
+.notification .content p {
+  margin: 0.5rem 0;
+}
+
+.notification .content .actions,
+.notification .content .actions button {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: right;
+  align-items: center;
+}
+.notification .content .actions button {
+  padding: 0.3rem 1rem;
+  background-color: transparent;
+  border: 1px solid #004d40;
+  color: #004d40;
+  cursor: pointer;
+}

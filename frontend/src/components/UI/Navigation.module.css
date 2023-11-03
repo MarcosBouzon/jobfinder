@@ -1,0 +1,66 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  text-align: center;
+  background-color: #004d40;
+  color: #ffff;
+  overflow: hidden;
+  z-index: 100;
+}
+.navbar .title {
+  margin: 0 0 0 2rem;
+}
+.navbar .navlinks-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 2rem;
+  justify-content: center;
+  align-items: center;
+}
+.navbar .navlinks {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  justify-content: center;
+  align-items: center;
+}
+.navbar .navlinks li {
+  display: inline-block;
+}
+.navbar .navlinks .navlink,
+.navbar .navlinks .navlink::after,
+.navbar .navlinks .navlink::before {
+  transition: all 0.2s;
+}
+.navbar .navlinks .navlink {
+  position: relative;
+  display: block;
+  margin: 0 0.5rem;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  text-transform: uppercase;
+  color: #ffff;
+  text-decoration: none;
+}
+.navbar .navlinks .navlink::after {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 0%;
+  content: '.';
+  color: transparent;
+  background: #FFFF;
+  height: 1px;
+}
+.navbar .navlinks .navlink:hover::after {
+  width: 100%;
+}
+.navbar .navlinks .navlink.active::after {
+  /* border-bottom: 1px solid white; */
+  width: 100%;
+}

@@ -1,0 +1,76 @@
+.form-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: 2rem 0;
+  justify-content: center;
+  align-items: center;
+}
+
+.form {
+  width: 40%;
+  padding: 5rem;
+  border: 10px solid #004d40;
+  border-radius: 5rem;
+  box-shadow: 2px 4px 10px 2px #00221c8f;
+}
+.group-label {
+  width: 100%;
+  margin: 1rem 0;
+  /* border-bottom: .5px solid #00221c8a; */
+}
+.control-group {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+  justify-content: center;
+  align-items: center;
+}
+.control-group.inline {
+  justify-content: left;
+}
+.control-group.inline .group-label {
+  width: 8rem;
+}
+
+.control-group .input.no-label {
+  margin: 0;
+}
+.control-group .input input {
+  width: 15rem;
+}
+.control-group .input input:focus {
+  border-color: #004d40;
+}
+.control-group .input-lg input {
+  width: 33rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: 5rem 0 0 0;
+  justify-content: right;
+}
+.actions button {
+  width: 5rem;
+  margin: 0 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #ffff;
+  color: #004d40;
+  font-weight: 500;
+  border: 2px solid #004d40;
+  border-radius: 1rem;
+  cursor: pointer;
+}
+.actions button:last-child {
+  background-color: #004d40;
+  color: #ffff;
+}
+.actions button:hover {
+  box-shadow: 0px 2px 2px #00000082;
+}
+.actions button:active {
+  box-shadow: none;
+}

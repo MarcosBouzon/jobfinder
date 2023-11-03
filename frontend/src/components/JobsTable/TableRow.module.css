@@ -1,0 +1,17 @@
+.job-row:hover {
+  background-color: #004d4032;
+}
+.job-row td {
+  height: 2.5rem;
+  border-bottom: 1px solid #004d40;
+}
+.actions-wrapper span {
+  margin: 0 0.25rem;
+  padding: .25rem;
+  cursor: pointer;
+}
+.actions-wrapper span:hover {
+  background-color: #004d40;
+  color: white;
+  border-radius: 5rem;
+}
