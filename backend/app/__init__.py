@@ -35,6 +35,7 @@ app.config["CELERY"] = {
     "broker_url": REDIS_BROKER,
     "result_backend": REDIS_BROKER,
     "task_always_eager": False,
+    "broker_connection_retry_on_startup": True,
 }
 app.config["CORS_ORIGINS"] = "http://localhost"
 app.config["CORS_SEND_WILDCARD"] = True

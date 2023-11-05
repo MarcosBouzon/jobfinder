@@ -21,7 +21,7 @@ def celery_init_app(app: Flask) -> Celery:
             "schedule": (60 * 60) * 2,  # every two hours
         },
         "delete_old_jobs": {
-            "task": "app.scrapper.task.delete_old_jobs",
+            "task": "app.scrapper.tasks.delete_old_jobs",
             "schedule": (60 * 60) * 24,  # every 24h
         },
     }
