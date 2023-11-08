@@ -9,8 +9,8 @@ from app.scrapper.models import Jobs, Settings
 
 JOBS_TO_RETRIEVE = 100
 JOB_ON_SITE = 1
-JOB_HYBRID = 3
 JOB_REMOTE = 2
+JOB_HYBRID = 3
 
 
 class LinkedinScrapper:
@@ -21,7 +21,16 @@ class LinkedinScrapper:
         self.headers = {
             "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0",
         }
-        locale.setlocale(locale.LC_ALL, "")
+        locale.setlocale(locale.LC_ALL, "en_US.utf8")
+        self.workplace = []
+
+        settings = Settings.objects.first()
+        if settings.on_site:
+            self.workplace.append(str(JOB_ON_SITE))
+        if settings.hybrid:
+            self.workplace.append(str(JOB_HYBRID))
+        if settings.remote:
+            self.workplace.append(str(JOB_REMOTE))
 
     def get_job_ids(self):
         """Get job ids from LinkedIn voyager API"""
@@ -34,7 +43,7 @@ class LinkedinScrapper:
         url += "origin:JOBS_HOME_SEARCH_BUTTON,"
         url += "keywords:python%20developer,"
         url += "locationUnion:(geoId:103644278),"
-        url += f"selectedFilters:(timePostedRange:List(r86400),distance:List(25),workplaceType:List({JOB_REMOTE},{JOB_HYBRID})),"
+        url += f"selectedFilters:(timePostedRange:List(r86400),distance:List(25),workplaceType:List({','.join(self.workplace)})),"
         url += "spellCorrectionEnabled:true)&"
         url += "servedEventEnabled=false&"
         url += "start=0"
@@ -83,7 +92,7 @@ class LinkedinScrapper:
                     "WARNING: LinkedIn API is not responding! "
                     f"Response code: {response.status_code}"
                 )
-                return
+                return {}
             response_dict = response.json()
 
             job_id = _id
@@ -124,7 +133,7 @@ class LinkedinScrapper:
                     max_salary = str(max_salary).split(",", maxsplit=1)[0]
                     salary = f"{min_salary}K/yr - {max_salary}K/yr"
                 else:
-                    salary = f"{min_salary}/h - {max_salary}h/h"
+                    salary = f"{min_salary}/h - {max_salary}/h"
 
             # no salary in job post, it might be in the job description
             except TypeError:
@@ -139,6 +148,7 @@ class LinkedinScrapper:
                 "company": company,
                 "platform": "LinkedIn",
                 "applies": applies,
+                "description": description,
             }
 
     def get_jobs(self):
@@ -165,15 +175,22 @@ class LinkedinScrapper:
         job_ids = self.get_job_ids()
         for job_id in job_ids:
             job = self.get_job_details(job_id)
-            applies = job.pop("applies")
 
-            if int(applies) > 50:
-                continue
-
-            new_job = Jobs(**job)
             try:
-                new_job.save()
-            except me.errors.NotUniqueError:
-                continue
+                applies = job.pop("applies")
+                description = job.pop("description")
+
+                if int(applies) > 50:
+                    continue
+                if not utils.is_match(description):
+                    continue
+
+                new_job = Jobs(**job)
+                try:
+                    new_job.save()
+                except me.errors.NotUniqueError:
+                    continue
+            except AttributeError:
+                pass
 
         reload_page()
