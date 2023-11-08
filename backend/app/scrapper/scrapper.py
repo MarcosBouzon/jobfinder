@@ -15,9 +15,9 @@ JOB_REMOTE = 2
 
 class LinkedinScrapper:
     def __init__(self) -> None:
-        self.li_at = "AQEDARTFYJMFXQr4AAABi15ExFIAAAGLtAwSbVYASlcoSF7Uf7QdiWza-UtfUONDSj09VcdmSv_0P_mXTLsP47Kug0LpokEV05ODq1H7HnPm6O1T44HQQKBkRMpWNHIPYO8YaoWTPel1jMwLt2FGPZLF"
-        self.li_rm = "AQGbg1qZjHtjwQAAAYpSfS-hCBXt3fAZVAijH7p3aFOeI-RG5xCOA2U4YA6b3JQdb38Pe2MNPJeSO5NaznxvmDAt_jxGZCy9W5NNY0LW8R1661CNryiO9bVF_5dC3hvUzRdv4beB0juHC5NtLlE8HBViMJIYuzcQYJc0ZCkSrfLrUg54r3wT1nHvVPbzdgDa8Ae3UmmiFt1NZkiaXy8rGQPrczwJDYHjP4Djb89mZqbjrB6ftwPYQxVpmXLH6M-oserSCaQzdL_Jo8Z3Rv3sEYKAzR0160_1nhDJkPHL9rOOSr3LqhKpUNS1fqrwrp5UdvcAIbkIm0gn6ykB6VI"
-        self.jsessionid = "ajax:0333426129146352671"
+        self.li_at = ""
+        self.li_rm = ""
+        self.jsessionid = ""
         self.headers = {
             "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0",
         }
