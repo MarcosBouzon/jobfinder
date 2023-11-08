@@ -15,7 +15,7 @@ def get_linkedin_jobs():
     start_time = datetime.now()
 
     linkedin = LinkedinScrapper()
-    linkedin.get_linkedin_jobs()
+    linkedin.get_jobs()
 
     end_time = datetime.now()
     loggger.info(

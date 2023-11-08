@@ -12,15 +12,15 @@ from .celery import celery_init_app
 
 if os.environ.get("stage") == "docker":
     REDIS_BROKER = "redis://jf-redis:6379"
-    SOCKET_ORIGIN = "http://localhost:9090"
+    SOCKET_ORIGIN = "http://nginx:9090"
 else:
-    REDIS_BROKER = "redis://localhost:6379"
+    REDIS_BROKER = "redis://localhost:16379"
     SOCKET_ORIGIN = "http://localhost:5173"
 
 app = Flask(__name__)
 socketio = SocketIO(
     app,
-    cors_allowed_origins=SOCKET_ORIGIN,
+    cors_allowed_origins="*",
     message_queue=REDIS_BROKER,
     async_mode="threading",
 )
@@ -37,7 +37,7 @@ app.config["CELERY"] = {
     "task_always_eager": False,
     "broker_connection_retry_on_startup": True,
 }
-app.config["CORS_ORIGINS"] = "http://localhost"
+app.config["CORS_ORIGINS"] = "*"
 app.config["CORS_SEND_WILDCARD"] = True
 
 # register blueprints

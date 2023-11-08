@@ -34,8 +34,8 @@ scrapper_bp.add_url_rule("/health", view_func=views.HealthCheck.as_view("health"
 
 @scrapper_bp.cli.command("get_jobs")
 def get_jobs():
-    # get_linkedin_jobs.delay()
-    tasks.get_linkedin_jobs()
+    tasks.get_linkedin_jobs.delay()
+    # tasks.get_linkedin_jobs()
 
 
 @scrapper_bp.cli.command("send_test_message")

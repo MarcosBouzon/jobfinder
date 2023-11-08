@@ -8,7 +8,7 @@ class Jobs(me.Document):
     title = me.StringField(max_length=255, required=True)
     salary = me.StringField(max_length=50)
     link = me.StringField(max_length=255, required=True)
-    company = me.StringField(max_length=50, required=True)
+    company = me.StringField(max_length=100, required=True)
     platform = me.StringField(max_length=20, required=True)
     seen = me.BooleanField(default=False)
     applied = me.BooleanField(default=False)

@@ -245,33 +245,18 @@ def get_salary_from_description(job_description) -> str:
     """Parse the job description looking possible salary.
 
     Args:
-        job_description (object): Instance of page element.
+        job_description (object): Description of a given job.
 
     Returns:
         str: String representing the job's salary if any.
     """
 
-    description = ""
-
-    elements = job_description.find_elements(By.TAG_NAME, "p")
-    for p_tag in elements:
-        try:
-            description += f"{p_tag.text} "
-        except StaleElementReferenceException:
-            continue
-    elements = job_description.find_elements(By.TAG_NAME, "li")
-    for p_tag in elements:
-        try:
-            description += f"{p_tag.text} "
-        except StaleElementReferenceException:
-            continue
-
     pattern = re.compile(r"\$\s?\d+[\W|\s]?[\w|\d]+[\W?][\w]*[^\W]")
-    matches = re.findall(pattern, description)
+    matches = re.findall(pattern, job_description)
     if matches:
         return " - ".join(matches)
 
-    return ""
+    return None
 
 
 def get_applicants(driver: Chrome = None) -> int:

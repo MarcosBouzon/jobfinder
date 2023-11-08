@@ -1,153 +1,179 @@
 import json
-import os
-import time
-from datetime import datetime
+import locale
+import re
 
 import mongoengine as me
+import requests
 from app.scrapper import utils
 from app.scrapper.models import Jobs, Settings
-from selenium import webdriver
-from selenium.common.exceptions import ElementClickInterceptedException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
+
+JOBS_TO_RETRIEVE = 100
+JOB_ON_SITE = 1
+JOB_HYBRID = 3
+JOB_REMOTE = 2
 
 
 class LinkedinScrapper:
     def __init__(self) -> None:
-        self.options = utils.set_options()
-        if os.environ.get("stage") == "docker":
-            self.driver = webdriver.Remote(
-                command_executor="http://jf-selenium:4444/wd/hub", options=self.options
-            )
-        else:
-            self.driver = webdriver.Firefox(options=self.options)
-        self.actions = webdriver.ActionChains(driver=self.driver)
-        self.wait = WebDriverWait(self.driver, 10)
-        self.keys = webdriver.Keys()
-        self.driver.execute_script(
-            "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
-        )
+        self.li_at = "AQEDARTFYJMFXQr4AAABi15ExFIAAAGLtAwSbVYASlcoSF7Uf7QdiWza-UtfUONDSj09VcdmSv_0P_mXTLsP47Kug0LpokEV05ODq1H7HnPm6O1T44HQQKBkRMpWNHIPYO8YaoWTPel1jMwLt2FGPZLF"
+        self.li_rm = "AQGbg1qZjHtjwQAAAYpSfS-hCBXt3fAZVAijH7p3aFOeI-RG5xCOA2U4YA6b3JQdb38Pe2MNPJeSO5NaznxvmDAt_jxGZCy9W5NNY0LW8R1661CNryiO9bVF_5dC3hvUzRdv4beB0juHC5NtLlE8HBViMJIYuzcQYJc0ZCkSrfLrUg54r3wT1nHvVPbzdgDa8Ae3UmmiFt1NZkiaXy8rGQPrczwJDYHjP4Djb89mZqbjrB6ftwPYQxVpmXLH6M-oserSCaQzdL_Jo8Z3Rv3sEYKAzR0160_1nhDJkPHL9rOOSr3LqhKpUNS1fqrwrp5UdvcAIbkIm0gn6ykB6VI"
+        self.jsessionid = "ajax:0333426129146352671"
+        self.headers = {
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0",
+        }
+        locale.setlocale(locale.LC_ALL, "")
 
-    def get_linkedin_jobs(self):
+    def get_job_ids(self):
+        """Get job ids from LinkedIn voyager API"""
+
+        url = "https://www.linkedin.com/voyager/api/voyagerJobsDashJobCards?"
+        url += "decorationId=com.linkedin.voyager.dash.deco.jobs.search.JobSearchCardsCollectionLite-56&"
+        url += f"count={JOBS_TO_RETRIEVE}&"
+        url += "q=jobSearch&"
+        url += "query=("
+        url += "origin:JOBS_HOME_SEARCH_BUTTON,"
+        url += "keywords:python%20developer,"
+        url += "locationUnion:(geoId:103644278),"
+        url += f"selectedFilters:(timePostedRange:List(r86400),distance:List(25),workplaceType:List({JOB_REMOTE},{JOB_HYBRID})),"
+        url += "spellCorrectionEnabled:true)&"
+        url += "servedEventEnabled=false&"
+        url += "start=0"
+
+        with requests.session() as s:
+            s.cookies["li_at"] = self.li_at
+            s.cookies["li_rm"] = self.li_rm
+            s.cookies["JSESSIONID"] = self.jsessionid
+            s.headers = self.headers
+            s.headers["csrf-token"] = s.cookies["JSESSIONID"].strip('"')
+            response = s.get(url)
+            response_dict = response.json()
+
+            ids = []
+            jobs = response_dict.get("elements")
+            for job in jobs:
+                card = job.get("jobCardUnion")
+                job_id = card.get("jobPostingCard").get(
+                    "preDashNormalizedJobPostingUrn"
+                )
+                try:
+                    job_id = re.findall("\d+", job_id)[0]
+                    ids.append(job_id)
+                except IndexError:
+                    pass
+
+            return ids
+
+    def get_job_details(self, _id):
+        """Get job description from LinkedIn voyager API"""
+
+        url = f"https://www.linkedin.com/voyager/api/jobs/jobPostings/{int(_id)}?"
+        url += "decorationId=com.linkedin.voyager.deco.jobs.web.shared.WebFullJobPosting-65&"
+        url += "topN=1"
+
+        with requests.session() as s:
+            s.cookies["li_at"] = self.li_at
+            s.cookies["li_rm"] = self.li_rm
+            s.cookies["JSESSIONID"] = self.jsessionid
+            s.headers = self.headers
+            s.headers["csrf-token"] = s.cookies["JSESSIONID"].strip('"')
+            response = s.get(url, timeout=30)
+
+            if not response.ok:
+                print(
+                    "WARNING: LinkedIn API is not responding! "
+                    f"Response code: {response.status_code}"
+                )
+                return
+            response_dict = response.json()
+
+            job_id = _id
+            title = response_dict.get("title")
+            description = response_dict.get("description").get("text")
+            try:
+                company = (
+                    response_dict.get("companyDetails")
+                    .get(
+                        "com.linkedin.voyager.deco.jobs.web.shared.WebJobPostingCompany"
+                    )
+                    .get("companyResolutionResult")
+                    .get("name")
+                )
+            except AttributeError:
+                company = (
+                    response_dict.get("companyDetails")
+                    .get("com.linkedin.voyager.jobs.JobPostingCompanyName")
+                    .get("companyName")
+                )
+            applies = response_dict.get("applies")
+            compensation = response_dict.get("salaryInsights").get(
+                "compensationBreakdown"
+            )
+
+            try:
+                compensation = compensation[0]
+                min_salary = locale.currency(
+                    float(compensation.get("minSalary")), grouping=True
+                )
+                max_salary = locale.currency(
+                    float(compensation.get("maxSalary")), grouping=True
+                )
+                pay_period = compensation.get("payPeriod")
+
+                if pay_period == "YEARLY":
+                    min_salary = str(min_salary).split(",", maxsplit=1)[0]
+                    max_salary = str(max_salary).split(",", maxsplit=1)[0]
+                    salary = f"{min_salary}K/yr - {max_salary}K/yr"
+                else:
+                    salary = f"{min_salary}/h - {max_salary}h/h"
+
+            # no salary in job post, it might be in the job description
+            except TypeError:
+                # salary = utils.get_salary_from_description(description)
+                salary = ""
+
+            return {
+                "job_id": job_id,
+                "title": title,
+                "salary": salary,
+                "link": f"https://www.linkedin.com/jobs/view/{int(job_id)}/",
+                "company": company,
+                "platform": "LinkedIn",
+                "applies": applies,
+            }
+
+    def get_jobs(self):
         """Get jobs from LinkedIn"""
 
-        settings = Settings.objects.first()
-        today = datetime.today()
-        now = datetime.now()
-
-        # anounce event to client
-        from app import publish_message
-        from app.scrapper.tasks import delete_on_search
+        from app import publish_message, reload_page
 
         publish_message(
             json.dumps(
                 {
-                    "title": "Notice",
-                    "message": "Jobs search has started, check for new jobs soon",
+                    "title": "Automation",
+                    "message": "Automatic jobs search has started!",
                     "success": True,
                 }
             )
         )
 
-        # avoid searching in weekends if setting is off
-        if not settings.weekend_search and today.weekday() in (5, 6):
-            return
-        # avoid searching in night time if setting is off
-        if not settings.night_search and now.hour >= 20:
-            return
-        if not settings.link_username or not settings.link_password:
-            return
+        settings = Settings.objects.first()
+        if settings.delete_on_search:
+            from app.scrapper.tasks import delete_on_search
 
-        # delete jobs previous to search if setting enabled
-        delete_on_search.delay()
+            delete_on_search.delay()
 
-        # login
-        self.driver.get("https://www.linkedin.com/login")
-        self.driver.implicitly_wait(10)
-        utils.login(self.driver)
+        job_ids = self.get_job_ids()
+        for job_id in job_ids:
+            job = self.get_job_details(job_id)
+            applies = job.pop("applies")
 
-        # go to jobs page
-        self.driver.get("https://www.linkedin.com/jobs")
-        self.driver.implicitly_wait(10)
+            if int(applies) > 50:
+                continue
 
-        utils.search_jobs(self.driver, self.actions, self.keys, self.wait)
-        pages = utils.get_job_pages(self.driver)
-
-        if pages:
-            last_page = pages[::-1][0].get_attribute("data-test-pagination-page-btn")
-            current_page = 1
-            while current_page <= int(last_page):
-                pages = utils.get_job_pages(self.driver)
-                for page in pages:
-                    page_number = page.get_attribute("data-test-pagination-page-btn")
-                    try:
-                        if current_page == int(page_number):
-                            page_btn = page.find_element(By.TAG_NAME, "button")
-                            page_btn.click()
-                            time.sleep(5)
-                            self._get_jobs_list()
-                            break
-                    except TypeError:
-                        # this is the ... button that shows more pages
-                        if current_page == 36:
-                            pass
-                        if page.id == pages[::-1][1].id:
-                            page_btn = page.find_element(By.TAG_NAME, "button")
-                            page_btn.click()
-                            time.sleep(5)
-                            break
-                current_page += 1
-        else:
-            self._get_jobs_list()
-        self.driver.close()
-
-    def _get_jobs_list(self):
-        # get jobs list
-        jobs_list = utils.get_jobs(self.driver)
-
-        self.driver.implicitly_wait(5)
-        for job in jobs_list:
+            new_job = Jobs(**job)
             try:
-                job.click()
-                time.sleep(3)
-            except ElementClickInterceptedException:
+                new_job.save()
+            except me.errors.NotUniqueError:
                 continue
 
-            applicants = utils.get_applicants(self.driver)
-            if applicants > 50:
-                continue
-
-            job_id = utils.get_job_id(job)
-            title = (
-                job.find_element(By.CLASS_NAME, "artdeco-entity-lockup__title")
-                .find_element(By.TAG_NAME, "a")
-                .text
-            )
-            salary = utils.get_salary(job)
-            link = "https://www.linkedin.com/jobs/view/" + str(job_id)
-            company = job.find_element(
-                By.CLASS_NAME, "job-card-container__primary-description"
-            ).text
-            platform = "LinkedIn"
-            job_description = self.driver.find_element(
-                By.CLASS_NAME, "jobs-description"
-            )
-            if not salary or salary == "":
-                salary = utils.get_salary_from_description(job_description)
-            is_match = utils.is_match(job_description)
-            if is_match:
-                job = Jobs(
-                    job_id=job_id,
-                    title=title,
-                    salary=salary,
-                    link=link,
-                    company=company,
-                    platform=platform,
-                )
-                try:
-                    job.save()
-                # job already exist
-                except me.errors.NotUniqueError:
-                    continue
-                except me.errors.ValidationError:
-                    continue
+        reload_page()
