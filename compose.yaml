@@ -94,19 +94,6 @@ services:
     networks:
       - jobfinder
 
-  selenium:
-    container_name: jf-selenium
-    hostname: jf-selenium
-    image: selenium/standalone-firefox:latest
-    shm_size: 2
-    networks:
-      - jobfinder
-    ports:
-      - 4444:4444
-      - 7900:7900
-    environment:
-      SE_OPTS: "--session-request-timeout 500 --session-timeout 500"
-
 networks:
   jobfinder:
     driver: bridge
