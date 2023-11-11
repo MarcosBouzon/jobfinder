@@ -6,8 +6,8 @@ import {
 } from "../../features/api/apiSlice";
 import { createNotification } from "../../store/notifications";
 import { useDispatch } from "react-redux";
-
 import classes from "./TableRow.module.css";
+import LightGreenTooltip from "../UI/Tooltip";
 
 const TableRow = ({ job, index, forApplied, onPopJob: popJob }) => {
   const [markSeen] = useMarkSeenMutation();
@@ -86,31 +86,55 @@ const TableRow = ({ job, index, forApplied, onPopJob: popJob }) => {
       <td>{job.platform}</td>
       <td className={classes["actions-wrapper"]}>
         {!forApplied && (
-          <span
-            className="material-symbols-sharp action-check"
-            data-bs-toggle="tooltip"
-            data-bs-title="Mark a job as applied"
-            onClick={markAppliedHandler}
+          <LightGreenTooltip
+            enterDelay={1000}
+            enterTouchDelay={1000}
+            title="Mark as applied"
+            disableInteractive={true}
+            enterNextDelay={1000}
           >
-            check_box
-          </span>
+            <span
+              className="material-symbols-sharp action-check"
+              data-bs-toggle="tooltip"
+              data-bs-title="Mark a job as applied"
+              onClick={markAppliedHandler}
+            >
+              check_box
+            </span>
+          </LightGreenTooltip>
         )}
-        <span
-          className="material-symbols-sharp action-open"
-          data-bs-toggle="tooltip"
-          data-bs-title="Go to job page"
-          onClick={goToPageHandler}
+        <LightGreenTooltip
+          enterDelay={1000}
+          enterTouchDelay={1000}
+          title="Open job"
+          disableInteractive={true}
+          enterNextDelay={1000}
         >
-          open_in_new
-        </span>
-        <span
-          className="material-symbols-sharp action-delete"
-          data-bs-toggle="tooltip"
-          data-bs-title="Delete job"
-          onClick={markDeletedHandler}
+          <span
+            className="material-symbols-sharp action-open"
+            data-bs-toggle="tooltip"
+            data-bs-title="Go to job page"
+            onClick={goToPageHandler}
+          >
+            open_in_new
+          </span>
+        </LightGreenTooltip>
+        <LightGreenTooltip
+          enterDelay={1000}
+          enterTouchDelay={1000}
+          title="Delete job"
+          disableInteractive={true}
+          enterNextDelay={1000}
         >
-          delete
-        </span>
+          <span
+            className="material-symbols-sharp action-delete"
+            data-bs-toggle="tooltip"
+            data-bs-title="Delete job"
+            onClick={markDeletedHandler}
+          >
+            delete
+          </span>
+        </LightGreenTooltip>
       </td>
     </tr>
   );

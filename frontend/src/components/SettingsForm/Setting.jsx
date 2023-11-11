@@ -1,18 +1,6 @@
 import SwitchButton from "../UI/SwitchButton";
-import Tooltip, { tooltipClasses } from "@mui/material/Tooltip";
-import { styled } from "@mui/material/styles";
 import classes from "./Setting.module.css";
-
-const LightGreenTooltip = styled(({ className, ...props }) => (
-  <Tooltip {...props} classes={{ popper: className }} />
-))(({ theme }) => ({
-  [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: "#004d40",
-    color: theme.palette.common.white,
-    boxShadow: theme.shadows[1],
-    fontSize: 11,
-  },
-}));
+import LightGreenTooltip from "../UI/Tooltip";
 
 /**
  * Custom switch button setting including a label. Accepts the following props:
