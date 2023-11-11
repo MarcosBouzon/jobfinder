@@ -1,6 +1,7 @@
 import json
 import locale
 import re
+from datetime import datetime
 
 import mongoengine as me
 import requests
@@ -15,22 +16,22 @@ JOB_HYBRID = 3
 
 class LinkedinScrapper:
     def __init__(self) -> None:
-        self.li_at = ""
-        self.li_rm = ""
-        self.jsessionid = ""
+        locale.setlocale(locale.LC_ALL, "en_US.utf8")
+        settings: Settings = Settings.objects.first()
+
         self.headers = {
             "user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0",
         }
-        locale.setlocale(locale.LC_ALL, "en_US.utf8")
         self.workplace = []
-
-        settings = Settings.objects.first()
         if settings.on_site:
             self.workplace.append(str(JOB_ON_SITE))
         if settings.hybrid:
             self.workplace.append(str(JOB_HYBRID))
         if settings.remote:
             self.workplace.append(str(JOB_REMOTE))
+        self.li_at = settings.li_at
+        self.li_rm = settings.li_rm
+        self.jsessionid = settings.jsessionid
 
     def get_job_ids(self):
         """Get job ids from LinkedIn voyager API"""
@@ -156,6 +157,19 @@ class LinkedinScrapper:
 
         from app import publish_message, reload_page
 
+        settings = Settings.objects.first()
+        today = datetime.today()
+        now = datetime.now()
+
+        # avoid searching in weekends if setting is off
+        if not settings.weekend_search and today.weekday() in (5, 6):
+            return
+        # avoid searching in night time if setting is off
+        if not settings.night_search and now.hour >= 20:
+            return
+        if not settings.li_at or not settings.li_rm or not settings.jsessionid:
+            return
+
         publish_message(
             json.dumps(
                 {
@@ -166,7 +180,6 @@ class LinkedinScrapper:
             )
         )
 
-        settings = Settings.objects.first()
         if settings.delete_on_search:
             from app.scrapper.tasks import delete_on_search
 

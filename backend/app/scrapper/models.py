@@ -35,8 +35,10 @@ class Jobs(me.Document):
 
 
 class Settings(me.Document):
-    link_username = me.StringField(required=True)
-    link_password = me.StringField(required=True)
+    li_at = me.StringField(required=True)
+    li_rm = me.StringField(required=True)
+    jsessionid = me.StringField(required=True)
+    session_expires = me.DateTimeField(required=False)
     job_title = me.StringField(required=True)
     keywords = me.StringField(default="")
     on_site = me.BooleanField(default=False)
@@ -46,6 +48,7 @@ class Settings(me.Document):
     weekend_search = me.BooleanField(default=False)
     delete_old = me.BooleanField(default=False)
     delete_on_search = me.BooleanField(default=False)
+    show_welcome = me.BooleanField(default=True)
 
     def serialize(self) -> dict:
         """Creates a dict version of the object
@@ -58,8 +61,14 @@ class Settings(me.Document):
         for field in self._fields_ordered:
             if field == "id":
                 data[field] = str(getattr(self, field))
+            elif field == "session_expires":
+                data[field] = "Expires / Max-Age:" + getattr(self, field).strftime(
+                    "%a, %d %b %Y %H:%M:%S %Z"
+                )
             elif isinstance(getattr(self, field), date):
                 data[field] = getattr(self, field).strftime("%Y-%m-%d")
+            elif field == "jsessionid":
+                data[field] = "JSESSIONID:" + '""' + getattr(self, field) + '""'
             else:
                 data[field] = getattr(self, field)
 

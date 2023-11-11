@@ -3,17 +3,13 @@ import Setting from "./Setting";
 import Spinner from "../UI/Spinner";
 import JobLocation from "./JobLocation";
 import Label from "../UI/Label";
-import {
-  useGetSettingsQuery,
-  useSaveSettingsMutation,
-} from "../../features/api/apiSlice";
+import { useSaveSettingsMutation } from "../../features/api/apiSlice";
 import { createNotification } from "../../store/notifications";
 import { useDispatch } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import classes from "./SettingsForm.module.css";
 
-const SettingsForm = () => {
-  const { data, isLoading, isSuccess, isError } = useGetSettingsQuery();
+const SettingsForm = ({ data, isLoading, isSuccess, isError }) => {
   const [saveSettings, { isSuccess: saveIsSuccess, isError: saveIsError }] =
     useSaveSettingsMutation();
   const dispatch = useDispatch();
@@ -64,43 +60,12 @@ const SettingsForm = () => {
       {isSuccess && (
         <div className={classes["form-wrapper"]}>
           <form className={classes.form} onSubmit={submitHandler}>
-            {/* LinkedIn credentials */}
-            <div className={classes["control-group"]}>
-              <Label
-                className={classes["group-label"]}
-                label="LinkedIn credentials:"
-                description="Use the same credentials that you use to log into LinkedIn"
-              />
-              <InputField
-                className={classes.input}
-                type="text"
-                id="link-username"
-                name="link-username"
-                label="User name"
-                placeholder="Insert LinkedIn user name."
-                value={data.link_username}
-                validator={(value) => value.trim() != ""}
-                errorMsg="This field can't be empty"
-              />
-              <InputField
-                className={classes.input}
-                type="password"
-                id="link-password"
-                name="link-password"
-                label="Password"
-                placeholder="Insert LinkedIn password here."
-                value={data.link_password}
-                validator={(value) => value.trim() != ""}
-                errorMsg="This field can't be empty"
-              />
-            </div>
-
             {/* Job title */}
             <div className={`${classes["control-group"]}`}>
               <Label
                 className={classes["group-label"]}
                 label="Job title:"
-                description="Search jobs which title is equal or similar to the value of this field."
+                description="Search for jobs which title is equal or similar to the value of this field."
               />
               <InputField
                 className={`${classes.input} ${classes["input-lg"]}`}
@@ -136,7 +101,7 @@ const SettingsForm = () => {
               <Label
                 className={classes["group-label"]}
                 label="Job location:"
-                description="Search jobs filered by their location"
+                description="Search jobs filered by their workplace location"
               />
               <JobLocation
                 remote={data.remote}

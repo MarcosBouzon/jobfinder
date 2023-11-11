@@ -108,15 +108,17 @@ class SettingsView(MethodView):
 
     def get(self):
         try:
-            settings = Settings.objects.first()
+            settings: Settings = Settings.objects.first()
             return settings.serialize()
         except AttributeError:
             return {}
 
     def post(self):
-        link_username = request.form.get("link-username")
-        link_password = request.form.get("link-password")
-        job_title = request.form.get("job-title")
+        li_at = request.form.get("li_at", "")
+        li_rm = request.form.get("li_rm", "")
+        jsessionid = request.form.get("jsessionid", "")
+        session_expires = request.form.get("session_expires", "")
+        job_title = request.form.get("job-title", "")
         keywords = request.form.get("keywords", "")
         on_site = request.form.get("onsite", False)
         hybrid = request.form.get("hybrid", False)
@@ -126,9 +128,30 @@ class SettingsView(MethodView):
         delete_old = request.form.get("delete-old", False)
         delete_on_search = request.form.get("delete-on-search", False)
 
+        if jsessionid:
+            colons = jsessionid.count(":")
+            if colons > 1:
+                jsessionid = jsessionid.split(":", maxsplit=1)[1]
+            jsessionid = jsessionid.strip('"')
+        if session_expires:
+            colons = session_expires.count(":")
+            if colons > 2:
+                session_expires = session_expires.split(":", maxsplit=1)[1]
+            session_expires = session_expires.strip('"')
+            session_expires = session_expires.replace("GMT", "").strip()
+            session_expires = datetime.strptime(
+                session_expires, "%a, %d %b %Y %H:%M:%S"
+            )
+        if li_at:
+            li_at = li_at.split(":")[1].strip('"')
+        if li_rm:
+            li_rm = li_rm.split(":")[1].strip('"')
+
         _settings = {
-            "link_username": link_username,
-            "link_password": link_password,
+            "li_at": li_at,
+            "li_rm": li_rm,
+            "jsessionid": jsessionid,
+            "session_expires": session_expires,
             "job_title": job_title,
             "keywords": keywords,
             "on_site": bool(on_site),
@@ -138,22 +161,36 @@ class SettingsView(MethodView):
             "weekend_search": bool(weekend_search),
             "delete_old": bool(delete_old),
             "delete_on_search": bool(delete_on_search),
+            "show_welcome": False,
         }
 
-        settings = Settings.objects.first()
+        settings: Settings = Settings.objects.first()
         if settings:
+            if settings.jsessionid and jsessionid == "":
+                _settings.pop("jsessionid")
+            if settings.session_expires and session_expires == "":
+                _settings.pop("session_expires")
+            if settings.li_at and li_at == "":
+                _settings.pop("li_at")
+            if settings.li_rm and li_rm == "":
+                _settings.pop("li_rm")
+            if (
+                not settings.jsessionid
+                and jsessionid == ""
+                or not settings.li_at
+                and li_at == ""
+                or not settings.li_rm
+                and li_rm == ""
+            ):
+                _settings["show_welcome"] = True
+
             settings.update(**_settings)
         else:
-            settings = Settings(
-                link_username=link_username,
-                link_password=link_password,
-                job_title=job_title,
-                night_search=night_search,
-                weekend_search=weekend_search,
-            )
+            _settings["show_welcome"] = True
+            settings = Settings(**_settings)
             settings.save()
 
-        return {"data": "success"}
+        return {"status": "success", "data": settings.serialize()}
 
 
 class HealthCheck(MethodView):

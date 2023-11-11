@@ -1,0 +1,24 @@
+.paper {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+  padding: 2rem;
+  background-color: #004d40 !important;
+  color: white !important;
+}
+.footer-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: right;
+}
+.step-image {
+  max-width: 100%;
+}
+.icon-img {
+  width: 2rem;
+}
+.cookie-input input {
+  width: 100%;
+  margin: 1rem 0;
+}
