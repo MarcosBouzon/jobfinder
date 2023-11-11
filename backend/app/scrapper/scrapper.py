@@ -29,6 +29,8 @@ class LinkedinScrapper:
             self.workplace.append(str(JOB_HYBRID))
         if settings.remote:
             self.workplace.append(str(JOB_REMOTE))
+        if not self.workplace:
+            self.workplace.append(str(JOB_REMOTE))
         self.li_at = settings.li_at
         self.li_rm = settings.li_rm
         self.jsessionid = settings.jsessionid

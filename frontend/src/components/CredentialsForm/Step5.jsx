@@ -70,7 +70,7 @@ const Step5 = (props) => {
           }}
         >
           <Typography variant="h4" sx={{ width: "100%", margin: "1rem 0" }}>
-            Get Credentials
+            Get Credentials -- part 2
           </Typography>
 
           <Grid xs={8} sx={{ padding: ".5rem" }}>
