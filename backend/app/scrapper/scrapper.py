@@ -118,11 +118,11 @@ class LinkedinScrapper:
                     .get("companyName")
                 )
             applies = response_dict.get("applies")
-            compensation = response_dict.get("salaryInsights").get(
-                "compensationBreakdown"
-            )
 
             try:
+                compensation = response_dict.get("salaryInsights").get(
+                    "compensationBreakdown"
+                )
                 compensation = compensation[0]
                 median_salary = compensation.get("medianSalary", None)
                 if not median_salary:
@@ -145,12 +145,15 @@ class LinkedinScrapper:
                         max_salary = str(max_salary).split(",", maxsplit=1)[0]
                         salary = f"{min_salary}K/yr - {max_salary}K/yr"
                 else:
-                    salary = f"{min_salary}/h - {max_salary}/h"
+                    if median_salary:
+                        salary = f"{median_salary}/h"
+                    else:
+                        salary = f"{min_salary}/h - {max_salary}/h"
 
             # no salary in job post, it might be in the job description
             except TypeError:
                 logger = logging.getLogger("logger")
-                logger.error("Error when getting salary info from job id: %d", job_id)
+                logger.error("Error when getting salary info from job id: %s", job_id)
                 # salary = utils.get_salary_from_description(description)
                 salary = ""
 
