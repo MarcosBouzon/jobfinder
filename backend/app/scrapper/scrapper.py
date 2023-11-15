@@ -35,6 +35,7 @@ class LinkedinScrapper:
         self.li_at = settings.li_at
         self.li_rm = settings.li_rm
         self.jsessionid = settings.jsessionid
+        self.logger = logging.getLogger("logger")
 
     def get_job_ids(self):
         """Get job ids from LinkedIn voyager API"""
@@ -92,16 +93,12 @@ class LinkedinScrapper:
             response = s.get(url, timeout=30)
 
             if not response.ok:
-                print(
-                    "WARNING: LinkedIn API is not responding! "
-                    f"Response code: {response.status_code}"
+                self.logger.error(
+                    "LinkedIn API is not responding code: %s", response.status_code
                 )
                 return {}
             response_dict = response.json()
 
-            job_id = _id
-            title = response_dict.get("title")
-            description = response_dict.get("description").get("text")
             try:
                 company = (
                     response_dict.get("companyDetails")
@@ -117,7 +114,6 @@ class LinkedinScrapper:
                     .get("com.linkedin.voyager.jobs.JobPostingCompanyName")
                     .get("companyName")
                 )
-            applies = response_dict.get("applies")
 
             try:
                 compensation = response_dict.get("salaryInsights").get(
@@ -152,20 +148,19 @@ class LinkedinScrapper:
 
             # no salary in job post, it might be in the job description
             except TypeError:
-                logger = logging.getLogger("logger")
-                logger.error("Error when getting salary info from job id: %s", job_id)
+                self.logger.info("Error when getting salary info from job id: %s", _id)
                 # salary = utils.get_salary_from_description(description)
                 salary = ""
 
             return {
-                "job_id": job_id,
-                "title": title,
+                "job_id": _id,
+                "title": response_dict.get("title"),
                 "salary": salary,
-                "link": f"https://www.linkedin.com/jobs/view/{int(job_id)}/",
+                "link": f"https://www.linkedin.com/jobs/view/{int(_id)}/",
                 "company": company,
                 "platform": "LinkedIn",
-                "applies": applies,
-                "description": description,
+                "applies": response_dict.get("applies"),
+                "description": response_dict.get("description").get("text"),
             }
 
     def get_jobs(self):
