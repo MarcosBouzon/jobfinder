@@ -1,12 +1,5 @@
 .wrapper {
-  position: sticky;
-  top: 5rem;
+  position: fixed;
+  bottom: 0;
   z-index: 50;
 }
-.notifications {
-  position: absolute;
-  overflow: hidden;
-  width: 100%;
-  float: right;
-}
-

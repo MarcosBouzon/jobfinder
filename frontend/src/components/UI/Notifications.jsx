@@ -30,25 +30,23 @@ const Notifications = (props) => {
 
   return (
     <div className={classes.wrapper}>
-      <div className={classes.notifications}>
-        {notifications.map((noti) => {
-          if (noti.visible) {
-            return (
-              <Notification
-                key={noti.id}
-                id={noti.id}
-                title={noti.title}
-                message={noti.message}
-                jobDeleted={noti.jobDeleted}
-                success={noti.success}
-                warning={noti.warning}
-                error={noti.error}
-                jobId={noti.jobId}
-              />
-            );
-          }
-        })}
-      </div>
+      {notifications.map((noti) => {
+        if (noti.visible) {
+          return (
+            <Notification
+              key={noti.id}
+              id={noti.id}
+              title={noti.title}
+              message={noti.message}
+              jobDeleted={noti.jobDeleted}
+              success={noti.success}
+              warning={noti.warning}
+              error={noti.error}
+              jobId={noti.jobId}
+            />
+          );
+        }
+      })}
     </div>
   );
 };

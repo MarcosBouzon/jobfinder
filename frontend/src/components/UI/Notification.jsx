@@ -65,13 +65,12 @@ const Notification = ({
             close
           </span>
         </div>
-        <h4>{title}</h4>
+        <h5>{title}</h5>
         <p>{message}</p>
         <div className={classes.actions}>
           {jobDeleted && (
             <button onClick={undeleteHanlder}>
               <span className="material-symbols-sharp">undo</span>
-              Undo
             </button>
           )}
         </div>

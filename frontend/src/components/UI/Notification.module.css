@@ -2,17 +2,17 @@
   position: relative;
   display: flex;
   flex-wrap: wrap;
-  right: -100%;
+  left: -100%;
   width: 25rem;
   margin: 1rem;
   box-shadow: 1px 3px 4px #00251e8a;
   background-color: #fff;
   z-index: 200;
-  transition: right 0.15s ease-out;
+  transition: left 0.15s ease-out;
 }
 .notification.show {
-  right: -77%;
-  transition: right 0.2s ease-out;
+  left: 0;
+  transition: left 0.3s ease-out;
 }
 .notification.hidden {
   display: none;
@@ -45,11 +45,12 @@
   right: 0;
   cursor: pointer;
 }
-.notification .content h4 {
+.notification .content h5 {
   margin: 0.5rem 0 0 0;
 }
 .notification .content p {
   margin: 0.5rem 0;
+  font-size: 14px;
 }
 
 .notification .content .actions,
@@ -60,9 +61,12 @@
   align-items: center;
 }
 .notification .content .actions button {
-  padding: 0.3rem 1rem;
+  padding: 0.1rem 1rem;
   background-color: transparent;
   border: 1px solid #004d40;
   color: #004d40;
   cursor: pointer;
+}
+.notification .content span.material-symbol-sharp {
+  font-size: 19px;
 }
