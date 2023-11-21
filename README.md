@@ -1,8 +1,7 @@
 # jobfinder
 
-A simple application for searching jobs in LinkedIn. As of 2023, LinkedIn doesn't provides
-an API endpoint to fetch jobs. This project uses Selenium to interact with LinkedIn
-website and fetch the jobs as background task that runs every two hours.
+A simple application for searching jobs in LinkedIn. The project uses LinkedIn's Voyager API
+to fetch the jobs as a background task that runs every two hours.
 
 Notice, this application is mean to run locally, and therefore not ready for production.
 Feel free to modify the project according to your needs.
@@ -20,9 +19,14 @@ Using the project:
 fetching new jobs every two hours.
 
 
-Inspect Selenium:
+Technologies:
 
-- Open your browser and navigate to `http://localhost:7900/?autoconnect=1&resize=scale&password=secret`
-- The Selenium task will run every two ours. When the task is running you will see the
-current execution in this window. Do not interact with the any element in this page or 
-Selenium execution might fail as the page elements are modified.
+- Python
+- Flask
+- Celery
+- React
+- Nginx
+- MongoDB
+- Docker
+- Docker-Composer
+- Redis
