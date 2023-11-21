@@ -80,9 +80,9 @@ const TableRow = ({ job, index, forApplied, onPopJob: popJob }) => {
         )}
       </td>
       <td style={{ width: "40rem", overflow: "hidden" }}>{job.title}</td>
-      <td>{job.salary}</td>
-      <td>{job.company}</td>
-      <td>{job.applied_date}</td>
+      <td style={{ width: "10rem", overflow: "hidden" }}>{job.salary}</td>
+      <td style={{ width: "25rem", overflow: "hidden" }}>{job.company}</td>
+      <td style={{ width: "7rem", overflow: "hidden" }}>{job.applied_date}</td>
       <td>{job.platform}</td>
       <td className={classes["actions-wrapper"]}>
         {!forApplied && (

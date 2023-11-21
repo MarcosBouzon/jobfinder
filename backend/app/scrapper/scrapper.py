@@ -109,11 +109,14 @@ class LinkedinScrapper:
                     .get("name")
                 )
             except AttributeError:
-                company = (
-                    response_dict.get("companyDetails")
-                    .get("com.linkedin.voyager.jobs.JobPostingCompanyName")
-                    .get("companyName")
-                )
+                try:
+                    company = (
+                        response_dict.get("companyDetails")
+                        .get("com.linkedin.voyager.jobs.JobPostingCompanyName")
+                        .get("companyName")
+                    )
+                except AttributeError:
+                    company = ""
 
             try:
                 compensation = response_dict.get("salaryInsights").get(
@@ -214,7 +217,10 @@ class LinkedinScrapper:
                     new_job.save()
                 except me.errors.NotUniqueError:
                     continue
-            except AttributeError:
-                pass
+            except AttributeError as e:
+                logger = logging.getLogger("logger")
+                logger.error(
+                    "get_jobs() error when processing job details. Error: %s", e
+                )
 
         reload_page()

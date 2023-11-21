@@ -1,4 +1,5 @@
 from celery import Celery, Task
+from celery.schedules import crontab
 from flask import Flask
 
 
@@ -22,7 +23,7 @@ def celery_init_app(app: Flask) -> Celery:
         },
         "delete_old_jobs": {
             "task": "app.scrapper.tasks.delete_old_jobs",
-            "schedule": (60 * 60) * 24,  # every 24h
+            "schedule": crontab(hour=6, minute=0),  # every day at 6am
         },
     }
 
