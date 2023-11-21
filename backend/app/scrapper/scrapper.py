@@ -9,7 +9,7 @@ import requests
 from app.scrapper import utils
 from app.scrapper.models import Jobs, Settings
 
-JOBS_TO_RETRIEVE = 200
+JOBS_TO_RETRIEVE = 100
 JOB_ON_SITE = 1
 JOB_REMOTE = 2
 JOB_HYBRID = 3
