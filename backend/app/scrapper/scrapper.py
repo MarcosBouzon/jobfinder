@@ -9,7 +9,7 @@ import requests
 from app.scrapper import utils
 from app.scrapper.models import Jobs, Settings
 
-JOBS_TO_RETRIEVE = 100
+JOBS_TO_RETRIEVE = 200
 JOB_ON_SITE = 1
 JOB_REMOTE = 2
 JOB_HYBRID = 3
@@ -151,7 +151,7 @@ class LinkedinScrapper:
 
             # no salary in job post, it might be in the job description
             except TypeError:
-                self.logger.info("Error when getting salary info from job id: %s", _id)
+                self.logger.info("Failed to get salary info from job id: %s", _id)
                 # salary = utils.get_salary_from_description(description)
                 salary = ""
 
