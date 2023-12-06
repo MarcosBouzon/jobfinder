@@ -19,7 +19,7 @@ def celery_init_app(app: Flask) -> Celery:
     celery_app.conf.beat_schedule = {
         "get_linkedin_jobs": {
             "task": "app.scrapper.tasks.get_linkedin_jobs",
-            "schedule": (60 * 60) * 2,  # every two hours
+            "schedule": (60 * 60),  # every one hour
         },
         "delete_old_jobs": {
             "task": "app.scrapper.tasks.delete_old_jobs",

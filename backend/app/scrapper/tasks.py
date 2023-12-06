@@ -5,7 +5,6 @@ from datetime import datetime
 from app.scrapper.models import Jobs, Settings
 from app.scrapper.scrapper import LinkedinScrapper
 from celery import shared_task
-from flask_socketio import emit
 
 
 @shared_task
@@ -15,11 +14,14 @@ def get_linkedin_jobs():
     start_time = datetime.now()
 
     linkedin = LinkedinScrapper()
-    linkedin.get_jobs()
+    saved, duplicated = linkedin.get_jobs()
 
     end_time = datetime.now()
     loggger.info(
-        "Search finished in LinkedIn. Execution time: %s", end_time - start_time
+        "Search finished in LinkedIn. Jobs added: %s. Duplicated: %s. Execution time: %s",
+        saved,
+        duplicated,
+        (end_time - start_time),
     )
 
 
@@ -86,7 +88,9 @@ def delete_on_search():
         )
 
         loggger = logging.getLogger("logger")
-        loggger.info("Starting automatic jobs deletion for non applied jobs before search!")
+        loggger.info(
+            "Starting automatic jobs deletion for non applied jobs before search!"
+        )
         jobs = Jobs.objects(applied=False, deleted=False)
         for job in jobs:
             job.deleted = True

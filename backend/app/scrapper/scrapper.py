@@ -77,10 +77,16 @@ class LinkedinScrapper:
 
             return ids
 
-    def get_job_details(self, _id):
-        """Get job description from LinkedIn voyager API"""
+    def get_job_details(self, job_id: int = None) -> dict:
+        """Get job details from LinkedIn voyager API
 
-        url = f"https://www.linkedin.com/voyager/api/jobs/jobPostings/{int(_id)}?"
+        Args:
+        - job_id: Job id to get details for.
+
+        Retruns: A dict with all the job details.
+        """
+
+        url = f"https://www.linkedin.com/voyager/api/jobs/jobPostings/{int(job_id)}?"
         url += "decorationId=com.linkedin.voyager.deco.jobs.web.shared.WebFullJobPosting-65&"
         url += "topN=1"
 
@@ -151,23 +157,68 @@ class LinkedinScrapper:
 
             # no salary in job post, it might be in the job description
             except TypeError:
-                self.logger.info("Failed to get salary info from job id: %s", _id)
+                self.logger.info("Failed to get salary info from job id: %s", job_id)
                 # salary = utils.get_salary_from_description(description)
                 salary = ""
 
             return {
-                "job_id": _id,
+                "job_id": job_id,
                 "title": response_dict.get("title"),
                 "salary": salary,
-                "link": f"https://www.linkedin.com/jobs/view/{int(_id)}/",
+                "link": f"https://www.linkedin.com/jobs/view/{int(job_id)}/",
                 "company": company,
                 "platform": "LinkedIn",
                 "applies": response_dict.get("applies"),
                 "description": response_dict.get("description").get("text"),
             }
 
-    def get_jobs(self):
-        """Get jobs from LinkedIn"""
+    def process_job(self, details: dict = None) -> Jobs | None:
+        """Process a job. The details dictionary should have the following keys:
+        - job_id: The job id.
+        - title: The job title.
+        - salary: The job salary.
+        - link: The job link.
+        - company: The job company.
+        - platform: The job platform.
+        - applies: The job applies.
+        - description: The job description.
+
+        Args:
+            details (dict, optional): Dict containing the job details. Defaults to {}.
+
+        Returns: An instance of Jobs class if the job was saved, or None if the job wasn't
+        saved.
+        """
+
+        if not details:
+            details = {}
+
+        try:
+            applies = details.pop("applies")
+            description = details.pop("description")
+
+            if int(applies) > 50:
+                return None
+            if not utils.is_match(description):
+                return None
+
+            new_job = Jobs(**details)
+            try:
+                new_job.save()
+                return new_job
+            except me.errors.NotUniqueError:
+                return None
+        except AttributeError as e:
+            logger = logging.getLogger("logger")
+            logger.error("get_jobs() error when processing job details. Error: %s", e)
+            return None
+
+    def get_jobs(self) -> tuple[int, int]:
+        """Get jobs from LinkedIn
+
+        Returns: A tuple containing the number of jobs added and the number of jobs
+        duplicated. The tuple is (jobs_added, jobs_duplicated).
+        """
 
         from app import publish_message, reload_page
 
@@ -177,12 +228,12 @@ class LinkedinScrapper:
 
         # avoid searching in weekends if setting is off
         if not settings.weekend_search and today.weekday() in (5, 6):
-            return
+            return 0
         # avoid searching in night time if setting is off
         if not settings.night_search and now.hour >= 20:
-            return
+            return 0
         if not settings.li_at or not settings.li_rm or not settings.jsessionid:
-            return
+            return 0
 
         publish_message(
             json.dumps(
@@ -199,28 +250,18 @@ class LinkedinScrapper:
 
             delete_on_search.delay()
 
+        jobs_counter = 0
+        duplicated_counter = 0
         job_ids = self.get_job_ids()
+
         for job_id in job_ids:
-            job = self.get_job_details(job_id)
+            job_details = self.get_job_details(job_id)
+            job = self.process_job(job_details)
 
-            try:
-                applies = job.pop("applies")
-                description = job.pop("description")
-
-                if int(applies) > 50:
-                    continue
-                if not utils.is_match(description):
-                    continue
-
-                new_job = Jobs(**job)
-                try:
-                    new_job.save()
-                except me.errors.NotUniqueError:
-                    continue
-            except AttributeError as e:
-                logger = logging.getLogger("logger")
-                logger.error(
-                    "get_jobs() error when processing job details. Error: %s", e
-                )
+            if job:
+                jobs_counter += 1
+            else:
+                duplicated_counter += 1
 
         reload_page()
+        return jobs_counter, duplicated_counter

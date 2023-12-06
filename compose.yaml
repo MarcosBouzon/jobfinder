@@ -83,7 +83,7 @@ services:
     image: redis:latest
     container_name: jf-redis
     hostname: jf-redis
-    # restart: always
+    restart: always
     healthcheck:
       test: "redis-cli PING"
       interval: 1m30s
