@@ -228,12 +228,12 @@ class LinkedinScrapper:
 
         # avoid searching in weekends if setting is off
         if not settings.weekend_search and today.weekday() in (5, 6):
-            return 0
+            return 0, 0
         # avoid searching in night time if setting is off
         if not settings.night_search and now.hour >= 20:
-            return 0
+            return 0, 0
         if not settings.li_at or not settings.li_rm or not settings.jsessionid:
-            return 0
+            return 0, 0
 
         publish_message(
             json.dumps(

@@ -88,7 +88,7 @@ services:
       test: "redis-cli PING"
       interval: 1m30s
       retries: 10
-      start_period: 15s
+      start_period: 5s
     ports:
       - 16379:6379
     networks:

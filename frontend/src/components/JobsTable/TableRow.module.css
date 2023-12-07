@@ -2,8 +2,8 @@
   background-color: #004d4032;
 }
 .job-row td {
-  height: 2.5rem;
-  border-bottom: 1px solid #004d40;
+  height: 2rem;
+  border-bottom: 1px solid #004d4040;
 }
 .actions-wrapper span {
   margin: 0 0.25rem;
