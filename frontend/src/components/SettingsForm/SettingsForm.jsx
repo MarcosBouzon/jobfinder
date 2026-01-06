@@ -7,7 +7,14 @@ import { useSaveSettingsMutation } from "../../features/api/apiSlice";
 import { createNotification } from "../../store/notifications";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
-import classes from "./SettingsForm.module.css";
+import { Button } from "@mui/material";
+import {
+  FormContainer,
+  StyledForm,
+  FormControlGroup,
+  FormActions,
+  GroupLabel,
+} from "../styled/StyledComponents";
 
 const SettingsForm = ({ data, isLoading, isSuccess, isError }) => {
   const [saveSettings, { isSuccess: saveIsSuccess, isError: saveIsError }] =
@@ -58,17 +65,15 @@ const SettingsForm = ({ data, isLoading, isSuccess, isError }) => {
     <>
       {isLoading && <Spinner />}
       {isSuccess && (
-        <div className={classes["form-wrapper"]}>
-          <form className={classes.form} onSubmit={submitHandler}>
+        <FormContainer>
+          <StyledForm onSubmit={submitHandler}>
             {/* Job title */}
-            <div className={`${classes["control-group"]}`}>
+            <FormControlGroup>
               <Label
-                className={classes["group-label"]}
                 label="Job title:"
                 description="Search for jobs which title is equal or similar to the value of this field."
               />
               <InputField
-                className={`${classes.input} ${classes["input-lg"]}`}
                 type="text"
                 id="job-title"
                 name="job-title"
@@ -77,29 +82,26 @@ const SettingsForm = ({ data, isLoading, isSuccess, isError }) => {
                 validator={(value) => value.trim() != ""}
                 errorMsg="This field can't be empty"
               />
-            </div>
+            </FormControlGroup>
 
             {/* Job keywords */}
-            <div className={`${classes["control-group"]}`}>
+            <FormControlGroup>
               <Label
-                className={classes["group-label"]}
                 label="Keywords"
                 description="Keywords to match in the job description. Leave this field empty to match any job containing your job title. Add keywords comma separated to filter the job description. If any of the kewwords is present in the job description, then it will be a match and the job will be saved. e.g: If you want to get jobs for Frontend developer using React, insert Frontend developer in the job title field, and React in the keywords field."
               />
               <InputField
-                className={`${classes.input} ${classes["input-lg"]}`}
                 type="text"
                 id="keywords"
                 name="keywords"
                 placeholder="Insert keywords to filter the job description."
                 value={data.keywords}
               />
-            </div>
+            </FormControlGroup>
 
             {/* Location */}
-            <div className={`${classes["control-group"]} `}>
+            <FormControlGroup>
               <Label
-                className={classes["group-label"]}
                 label="Job location:"
                 description="Search jobs filered by their workplace location"
               />
@@ -108,12 +110,11 @@ const SettingsForm = ({ data, isLoading, isSuccess, isError }) => {
                 onSite={data.on_site}
                 hybrid={data.hybrid}
               />
-            </div>
+            </FormControlGroup>
 
             {/* Other settings */}
-            <div className={classes["control-group"]}>
+            <FormControlGroup>
               <Label
-                className={classes["group-label"]}
                 label="Other settings:"
                 description=""
               />
@@ -145,13 +146,17 @@ const SettingsForm = ({ data, isLoading, isSuccess, isError }) => {
                 description="Automatically delete all existing unseen jobs before each search."
                 value={data.delete_on_search}
               />
-            </div>
-            <div className={classes.actions}>
-              <button type="reset">Cancel</button>
-              <button type="submit">Save</button>
-            </div>
-          </form>
-        </div>
+            </FormControlGroup>
+            <FormActions>
+              <Button type="reset" variant="outlined" color="secondary">
+                Cancel
+              </Button>
+              <Button type="submit" variant="contained">
+                Save
+              </Button>
+            </FormActions>
+          </StyledForm>
+        </FormContainer>
       )}
     </>
   );

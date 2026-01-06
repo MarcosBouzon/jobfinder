@@ -23,7 +23,7 @@ const Applied = () => {
     <>
       <JobsForm setTitle={setTitleHandler} setCompany={setCompanyHandler} />
       {isLoading && <Spinner />}
-      {isSuccess && <JobsTable jobs={data} forApplied={true} />}
+      {isSuccess && data && <JobsTable jobs={data} forApplied={true} />}
     </>
   );
 };

@@ -1,10 +1,9 @@
-import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import sharedClasses from "./SharedClasses.module.css";
 import SlideFooter from "./SlideFooter";
 import Grid from "@mui/material/Unstable_Grid2";
 import step4ImgMozilla from "../../assets/step4.webp";
 import InputField from "../UI/InputField";
+import { StepContentPaper, StepImage, StepFooter, CookieInput } from "../styled/StyledComponents";
 import { useEffect, useState } from "react";
 import {
   useSaveSettingsMutation,
@@ -61,23 +60,15 @@ const Step4 = (props) => {
   return (
     <Grid container justifyContent="center">
       <Grid xs={10}>
-        <Paper
-          elevation={3}
-          className={sharedClasses.paper}
-          sx={{
-            boxShadow:
-              "0px 5px 5px -3px rgba(0, 0, 0, 0.66),0px 8px 10px 1px rgba(0, 0, 0, 0.12),0px 3px 14px 2px rgba(0, 0, 0, 0.15);",
-          }}
-        >
+        <StepContentPaper elevation={3}>
           <Typography variant="h4" sx={{ width: "100%", margin: "1rem 0" }}>
             Get Credentials
           </Typography>
 
           <Grid xs={8} sx={{ padding: ".5rem" }}>
-            <img
+            <StepImage
               src={step4ImgMozilla}
               alt="Dev tools Firefox"
-              className={sharedClasses["step-image"]}
             />
           </Grid>
 
@@ -101,16 +92,17 @@ const Step4 = (props) => {
                 in the following input field. Paste the value as it is, don't
                 modify it.
               </Typography>
-              <InputField
-                className={sharedClasses["cookie-input"]}
-                id="jsessionid"
-                name="jsessionid"
-                type="text"
-                placeholder="Insert value of JSESSIONID cookie here."
-                validator={(value) => value.trim() !== ""}
-                onChange={handleJsessionChange}
-                value={isSuccess ? data.jsessionid : ""}
-              />
+              <CookieInput>
+                <InputField
+                  id="jsessionid"
+                  name="jsessionid"
+                  type="text"
+                  placeholder="Insert value of JSESSIONID cookie here."
+                  validator={(value) => value.trim() !== ""}
+                  onChange={handleJsessionChange}
+                  value={isSuccess ? data.jsessionid : ""}
+                />
+              </CookieInput>
             </Grid>
             <br />
             <Grid xs={12}>
@@ -120,27 +112,28 @@ const Step4 = (props) => {
                 value of the Expires row, paste the value in the following input
                 field. Paste the value as it is, don't modify it.
               </Typography>
-              <InputField
-                className={sharedClasses["cookie-input"]}
-                id="expires"
-                name="expires"
-                type="text"
-                placeholder="Insert value of Expires here."
-                validator={(value) => value.trim() !== ""}
-                onChange={handleExpiresChange}
-                value={isSuccess ? data.session_expires : ""}
-              />
+              <CookieInput>
+                <InputField
+                  id="expires"
+                  name="expires"
+                  type="text"
+                  placeholder="Insert value of Expires here."
+                  validator={(value) => value.trim() !== ""}
+                  onChange={handleExpiresChange}
+                  value={isSuccess ? data.session_expires : ""}
+                />
+              </CookieInput>
             </Grid>
           </Grid>
 
-          <div className={sharedClasses["footer-wrapper"]}>
+          <StepFooter>
             <SlideFooter
               {...props}
               disableNext={disableNext}
               handleNext={handleNext}
             />
-          </div>
-        </Paper>
+          </StepFooter>
+        </StepContentPaper>
       </Grid>
     </Grid>
   );

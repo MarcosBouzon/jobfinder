@@ -1,19 +1,11 @@
-import classes from "./Spinner.module.css";
+import { CircularProgress } from "@mui/material";
+import { SpinnerContainer } from "../styled/StyledComponents";
 
 const Spinner = () => {
   return (
-    <div className={classes["spinner-wrapper"]}>
-      <div className={classes["lds-roller"]}>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-    </div>
+    <SpinnerContainer>
+      <CircularProgress size={60} />
+    </SpinnerContainer>
   );
 };
 

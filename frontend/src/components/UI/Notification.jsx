@@ -1,8 +1,15 @@
-import { useEffect, useState } from "react";
-import { hideNotification } from "../../store/notifications";
-import { useDispatch } from "react-redux";
+import { IconButton } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import WarningIcon from "@mui/icons-material/Warning";
+import ErrorIcon from "@mui/icons-material/Error";
+import CloseIcon from "@mui/icons-material/Close";
+import UndoIcon from "@mui/icons-material/Undo";
 import { useUndeleteJobMutation } from "../../features/api/apiSlice";
-import classes from "./Notification.module.css";
+import {
+  NotificationPaper,
+  NotificationSidebar,
+  NotificationContent,
+} from "../styled/StyledComponents";
 import useNotification from "../hooks/use-notification";
 
 const Notification = ({
@@ -24,58 +31,61 @@ const Notification = ({
   ] = useNotification(id);
   const [undeleteJob] = useUndeleteJobMutation();
 
-  let notiClasses = `${classes.notification} `;
-  if (notifIsVisible) {
-    notiClasses = `${classes.notification} ${classes.show} `;
-  }
-  if (notifIsHidden) {
-    notiClasses = `${classes.notification} ${classes.hidden}`;
-  }
-
-  let typeClasses = `${classes["type-wrapper"]} `;
-  if (success) {
-    typeClasses += `${classes["bg-success"]}`;
-  } else if (warning) {
-    typeClasses += `${classes["bg-warning"]}`;
-  } else if (error) {
-    typeClasses += `${classes["bg-error"]}`;
-  }
+  const variant = error ? "error" : warning ? "warning" : "success";
 
   const undeleteHanlder = () => {
     closeHandler();
     undeleteJob(jobId);
   };
 
+  if (notifIsHidden) {
+    return null;
+  }
+
   return (
-    <div
-      className={notiClasses}
+    <NotificationPaper
+      visible={notifIsVisible}
       onPointerEnter={pointerEnterHandler}
       onPointerLeave={pointerLeaveHandler}
     >
-      <div className={typeClasses}>
-        {success && (
-          <span className="material-symbols-sharp">check_circle</span>
-        )}
-        {warning && <span className="material-symbols-sharp">warning</span>}
-        {error && <span className="material-symbols-sharp">error</span>}
-      </div>
-      <div className={classes.content}>
-        <div className={classes.close}>
-          <span className="material-symbols-sharp" onClick={closeHandler}>
-            close
-          </span>
-        </div>
+      <NotificationSidebar variant={variant}>
+        {success && <CheckCircleIcon />}
+        {warning && <WarningIcon />}
+        {error && <ErrorIcon />}
+      </NotificationSidebar>
+      <NotificationContent>
+        <IconButton
+          size="small"
+          onClick={closeHandler}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: "text.secondary",
+          }}
+        >
+          <CloseIcon fontSize="small" />
+        </IconButton>
         <h5>{title}</h5>
         <p>{message}</p>
-        <div className={classes.actions}>
-          {jobDeleted && (
-            <button onClick={undeleteHanlder}>
-              <span className="material-symbols-sharp">undo</span>
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
+        {jobDeleted && (
+          <IconButton
+            size="small"
+            onClick={undeleteHanlder}
+            sx={{
+              border: "1px solid",
+              borderColor: "primary.main",
+              color: "primary.main",
+              borderRadius: 1,
+              padding: "0.1rem 1rem",
+              marginTop: "0.5rem",
+            }}
+          >
+            <UndoIcon fontSize="small" />
+          </IconButton>
+        )}
+      </NotificationContent>
+    </NotificationPaper>
   );
 };
 

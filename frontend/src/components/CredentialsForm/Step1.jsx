@@ -1,21 +1,13 @@
-import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import sharedClasses from "./SharedClasses.module.css";
 import SlideFooter from "./SlideFooter";
 import Grid from "@mui/material/Unstable_Grid2";
+import { StepContentPaper, StepFooter } from "../styled/StyledComponents";
 
 const Step1 = (props) => {
   return (
     <Grid container justifyContent="center">
       <Grid xs={6}>
-        <Paper
-          elevation={8}
-          className={sharedClasses.paper}
-          sx={{
-            boxShadow:
-              "0px 5px 5px -3px rgba(0, 0, 0, 0.66),0px 8px 10px 1px rgba(0, 0, 0, 0.12),0px 3px 14px 2px rgba(0, 0, 0, 0.15);",
-          }}
-        >
+        <StepContentPaper elevation={8}>
           <Typography variant="h4" sx={{ width: "100%", margin: "1rem 0" }}>
             Welcome
           </Typography>
@@ -39,10 +31,10 @@ const Step1 = (props) => {
             than a second, so now you know what the recruiter is talking about
             and the journey starts........
           </Typography>
-          <div className={sharedClasses["footer-wrapper"]}>
+          <StepFooter>
             <SlideFooter {...props} />
-          </div>
-        </Paper>
+          </StepFooter>
+        </StepContentPaper>
       </Grid>
     </Grid>
   );

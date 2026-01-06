@@ -1,28 +1,25 @@
-import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import { useState } from "react";
+import { Box } from "@mui/material";
 
 const SlideFooter = (props) => {
 
   return (
     <Box>
       <Button
+        variant="outlined"
         color="inherit"
         disabled={props.activeStep === 0}
         onClick={props.handleBack}
-        sx={{ mr: 1, color: "#FFFF", border: "1px solid #FFFF" }}
+        sx={{ mr: 1 }}
       >
         Back
       </Button>
 
       <Button
+        variant="outlined"
+        color="inherit"
         onClick={props.handleNext}
         disabled={props.disableNext !== undefined ? props.disableNext : false}
-        sx={{
-          color: "#FFFF",
-          border: "1px solid #FFFF",
-          "&:hover": { backgroundColor: "#004d4010" },
-        }}
       >
         {props.isLast ? "Finish" : "Next"}
       </Button>

@@ -42,7 +42,7 @@ const Home = () => {
   return (
     <>
       {isLoading && <Spinner />}
-      {isSuccess && <JobsTable jobs={data.jobs} />}
+      {isSuccess && data?.jobs && <JobsTable jobs={data.jobs} />}
     </>
   );
 };

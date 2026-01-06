@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux";
 import Notification from "./Notification";
-import classes from "./Notifications.module.css";
+import { NotificationContainer } from "../styled/StyledComponents";
 import { io } from "socket.io-client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { createNotification } from "../../store/notifications";
 import { useDispatch } from "react-redux";
 
@@ -12,7 +12,7 @@ const socket = io("http://localhost:5100/", {
   },
 });
 
-const Notifications = (props) => {
+const Notifications = () => {
   const notifications = useSelector(
     (state) => state.notifications.notifications
   );
@@ -26,10 +26,10 @@ const Notifications = (props) => {
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [dispatch]);
 
   return (
-    <div className={classes.wrapper}>
+    <NotificationContainer>
       {notifications.map((noti) => {
         if (noti.visible) {
           return (
@@ -46,8 +46,9 @@ const Notifications = (props) => {
             />
           );
         }
+        return null;
       })}
-    </div>
+    </NotificationContainer>
   );
 };
 

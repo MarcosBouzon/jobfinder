@@ -1,27 +1,31 @@
-import TableRow from "./TableRow";
-import classes from "./JobsTable.module.css";
-import { useState } from "react";
+import JobTableRow from "./TableRow";
+import { TableBody, TableCell, TableRow } from "@mui/material";
+import {
+  StyledTableContainer,
+  StyledTable,
+  StyledTableHead,
+} from "../styled/StyledComponents";
 
 const JobsTable = (props) => {
-
+  const jobs = props.jobs || [];
+  
   return (
-    <div className={classes["table-wrapper"]}>
-      <table className={classes.table}>
-        <thead className={classes.head}>
-          <tr>
-            <td>#</td>
-            <td>Title</td>
-            <td>Salary</td>
-            <td>Company</td>
-            <td>Applied Date</td>
-            <td>Platform</td>
-            <td>Actions</td>
-          </tr>
-        </thead>
-        <tbody>
-          {props.jobs.map((job, index) => {
+    <StyledTableContainer component="div">
+      <StyledTable>
+        <StyledTableHead>
+          <TableRow>
+            <TableCell>#</TableCell>
+            <TableCell>Title</TableCell>
+            <TableCell>Salary</TableCell>
+            <TableCell>Company</TableCell>
+            <TableCell>Source</TableCell>
+            <TableCell>Actions</TableCell>
+          </TableRow>
+        </StyledTableHead>
+        <TableBody>
+          {jobs.map((job, index) => {
             return (
-              <TableRow
+              <JobTableRow
                 job={job}
                 key={job.id}
                 index={index + 1}
@@ -29,9 +33,9 @@ const JobsTable = (props) => {
               />
             );
           })}
-        </tbody>
-      </table>
-    </div>
+        </TableBody>
+      </StyledTable>
+    </StyledTableContainer>
   );
 };
 

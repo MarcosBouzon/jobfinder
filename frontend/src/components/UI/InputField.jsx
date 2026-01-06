@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import useInputValidator from "../hooks/use-input-validator";
-import classes from "./InputField.module.css";
+import { StyledTextField } from "../styled/StyledComponents";
 
 /**
  * Generic input field.
@@ -34,11 +34,6 @@ const InputField = (props) => {
       props.onBlur
     );
 
-  let nameClases = `${classes["form-control"]} ${props.className} `;
-  if (isValid === false) {
-    nameClases += `${classes.invalid}`;
-  }
-
   useEffect(() => {
     const fieldIsValid = props.fieldIsValid;
     if (fieldIsValid && typeof fieldIsValid === "function") {
@@ -49,27 +44,20 @@ const InputField = (props) => {
   }, [isValid]);
 
   return (
-    <div className={nameClases}>
-      {props.label && (
-        <label htmlFor={props.id} className={classes.label}>
-          {props.label}
-        </label>
-      )}
-      <input
-        className={classes.input}
-        type={props.type}
-        id={props.id}
-        name={props.name}
-        placeholder={props.placeholder}
-        value={value}
-        onChange={changeHandler}
-        onClick={touchHandler}
-        onBlur={blurHandler}
-      />
-      {isValid === false && (
-        <p className={`${classes["error-text"]}`}>{props.errorMsg}</p>
-      )}
-    </div>
+    <StyledTextField
+      type={props.type}
+      id={props.id}
+      name={props.name}
+      label={props.label}
+      placeholder={props.placeholder}
+      value={value}
+      onChange={changeHandler}
+      onClick={touchHandler}
+      onBlur={blurHandler}
+      error={isValid === false}
+      helperText={isValid === false ? props.errorMsg : ""}
+      fullWidth
+    />
   );
 };
 

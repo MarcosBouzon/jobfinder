@@ -1,10 +1,9 @@
-import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import sharedClasses from "./SharedClasses.module.css";
 import SlideFooter from "./SlideFooter";
 import Grid from "@mui/material/Unstable_Grid2";
 import step5ImgMozilla from "../../assets/step5.webp";
 import InputField from "../UI/InputField";
+import { StepContentPaper, StepImage, StepFooter, CookieInput } from "../styled/StyledComponents";
 import { useEffect, useState } from "react";
 import {
   useSaveSettingsMutation,
@@ -61,23 +60,15 @@ const Step5 = (props) => {
   return (
     <Grid container justifyContent="center">
       <Grid xs={10}>
-        <Paper
-          elevation={3}
-          className={sharedClasses.paper}
-          sx={{
-            boxShadow:
-              "0px 5px 5px -3px rgba(0, 0, 0, 0.66),0px 8px 10px 1px rgba(0, 0, 0, 0.12),0px 3px 14px 2px rgba(0, 0, 0, 0.15);",
-          }}
-        >
+        <StepContentPaper elevation={3}>
           <Typography variant="h4" sx={{ width: "100%", margin: "1rem 0" }}>
             Get Credentials -- part 2
           </Typography>
 
           <Grid xs={8} sx={{ padding: ".5rem" }}>
-            <img
+            <StepImage
               src={step5ImgMozilla}
               alt="Dev tools Firefox"
-              className={sharedClasses["step-image"]}
             />
           </Grid>
 
@@ -93,43 +84,45 @@ const Step5 = (props) => {
               value and paste it as it is in the next input field.
             </Typography>
             <br />
-            <InputField
-              className={sharedClasses["cookie-input"]}
-              id="li_at"
-              name="li_at"
-              type="text"
-              label="li_at"
-              placeholder="Insert value of li_at cookie here."
-              validator={(value) => value.trim() !== ""}
-              onChange={handleLiatChange}
-              value={liat}
-            />
+            <CookieInput>
+              <InputField
+                id="li_at"
+                name="li_at"
+                type="text"
+                label="li_at"
+                placeholder="Insert value of li_at cookie here."
+                validator={(value) => value.trim() !== ""}
+                onChange={handleLiatChange}
+                value={liat}
+              />
+            </CookieInput>
             <br />
             <Typography variant="body1" sx={{ width: "100%" }}>
               2- Find 'li_rm' in the cookies table, click on it, copy the row
               value and paste it as it is in the next input field.
             </Typography>
-            <InputField
-              className={sharedClasses["cookie-input"]}
-              id="expires"
-              name="expires"
-              type="text"
-              label="li_rm"
-              placeholder="Insert value of li_rm here."
-              validator={(value) => value.trim() !== ""}
-              onChange={handleLirmChange}
-              value={lirm}
-            />
+            <CookieInput>
+              <InputField
+                id="expires"
+                name="expires"
+                type="text"
+                label="li_rm"
+                placeholder="Insert value of li_rm here."
+                validator={(value) => value.trim() !== ""}
+                onChange={handleLirmChange}
+                value={lirm}
+              />
+            </CookieInput>
           </Grid>
 
-          <div className={sharedClasses["footer-wrapper"]}>
+          <StepFooter>
             <SlideFooter
               {...props}
               disableNext={disableNext}
               handleNext={handleNext}
             />
-          </div>
-        </Paper>
+          </StepFooter>
+        </StepContentPaper>
       </Grid>
     </Grid>
   );

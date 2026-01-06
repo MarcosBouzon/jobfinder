@@ -1,4 +1,9 @@
 import { useState } from "react";
+import { TableCell, IconButton, Box } from "@mui/material";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import DeleteIcon from "@mui/icons-material/Delete";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import {
   useMarkAppliedMutation,
   useMarkDeletedMutation,
@@ -6,14 +11,18 @@ import {
 } from "../../features/api/apiSlice";
 import { createNotification } from "../../store/notifications";
 import { useDispatch } from "react-redux";
-import classes from "./TableRow.module.css";
+import { StyledTableRow } from "../styled/StyledComponents";
 import LightGreenTooltip from "../UI/Tooltip";
 
-const TableRow = ({ job, index, forApplied, onPopJob: popJob }) => {
+const TableRow = ({ job, index, forApplied }) => {
   const [markSeen] = useMarkSeenMutation();
   const [markApplied] = useMarkAppliedMutation();
   const [markDeleted] = useMarkDeletedMutation();
   const dispatch = useDispatch();
+
+  if (!job) {
+    return null;
+  }
 
   const markSeenHandler = async () => {
     try {
@@ -69,74 +78,66 @@ const TableRow = ({ job, index, forApplied, onPopJob: popJob }) => {
   };
 
   return (
-    <tr className={classes["job-row"]}>
-      <td>
+    <StyledTableRow>
+      <TableCell>
         {forApplied ? (
           index
         ) : job.seen ? (
-          <span className="material-symbols-sharp">visibility</span>
+          <VisibilityIcon fontSize="small" />
         ) : (
           index
         )}
-      </td>
-      <td style={{ width: "40rem", overflow: "hidden" }}>{job.title}</td>
-      <td style={{ width: "10rem", overflow: "hidden" }}>{job.salary}</td>
-      <td style={{ width: "25rem", overflow: "hidden" }}>{job.company}</td>
-      <td style={{ width: "7rem", overflow: "hidden" }}>{job.applied_date}</td>
-      <td>{job.platform}</td>
-      <td className={classes["actions-wrapper"]}>
-        {!forApplied && (
+      </TableCell>
+      <TableCell sx={{ width: "40rem", overflow: "hidden" }}>
+        {job.title}
+      </TableCell>
+      <TableCell sx={{ width: "10rem", overflow: "hidden" }}>
+        {job.salary}
+      </TableCell>
+      <TableCell sx={{ width: "25rem", overflow: "hidden" }}>
+        {job.company}
+      </TableCell>
+      <TableCell>{job.platform}</TableCell>
+      <TableCell>
+        <Box sx={{ display: 'flex', gap: '0.25rem' }}>
+          {!forApplied && (
+            <LightGreenTooltip
+              enterDelay={1000}
+              enterTouchDelay={1000}
+              title="Mark as applied"
+              disableInteractive={true}
+              enterNextDelay={1000}
+            >
+              <IconButton size="small" onClick={markAppliedHandler}>
+                <CheckBoxIcon fontSize="small" />
+              </IconButton>
+            </LightGreenTooltip>
+          )}
           <LightGreenTooltip
             enterDelay={1000}
             enterTouchDelay={1000}
-            title="Mark as applied"
+            title="Open job"
             disableInteractive={true}
             enterNextDelay={1000}
           >
-            <span
-              className="material-symbols-sharp action-check"
-              data-bs-toggle="tooltip"
-              data-bs-title="Mark a job as applied"
-              onClick={markAppliedHandler}
-            >
-              check_box
-            </span>
+            <IconButton size="small" onClick={goToPageHandler}>
+              <OpenInNewIcon fontSize="small" />
+            </IconButton>
           </LightGreenTooltip>
-        )}
-        <LightGreenTooltip
-          enterDelay={1000}
-          enterTouchDelay={1000}
-          title="Open job"
-          disableInteractive={true}
-          enterNextDelay={1000}
-        >
-          <span
-            className="material-symbols-sharp action-open"
-            data-bs-toggle="tooltip"
-            data-bs-title="Go to job page"
-            onClick={goToPageHandler}
+          <LightGreenTooltip
+            enterDelay={1000}
+            enterTouchDelay={1000}
+            title="Delete job"
+            disableInteractive={true}
+            enterNextDelay={1000}
           >
-            open_in_new
-          </span>
-        </LightGreenTooltip>
-        <LightGreenTooltip
-          enterDelay={1000}
-          enterTouchDelay={1000}
-          title="Delete job"
-          disableInteractive={true}
-          enterNextDelay={1000}
-        >
-          <span
-            className="material-symbols-sharp action-delete"
-            data-bs-toggle="tooltip"
-            data-bs-title="Delete job"
-            onClick={markDeletedHandler}
-          >
-            delete
-          </span>
-        </LightGreenTooltip>
-      </td>
-    </tr>
+            <IconButton size="small" onClick={markDeletedHandler}>
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </LightGreenTooltip>
+        </Box>
+      </TableCell>
+    </StyledTableRow>
   );
 };
 

@@ -1,4 +1,3 @@
-import classes from "./CredentialsForm.module.css";
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
@@ -11,6 +10,7 @@ import Step3 from "./Step3";
 import Step4 from "./Step4";
 import Step5 from "./Step5";
 import { useState } from "react";
+import { StepperContainer } from "../styled/StyledComponents";
 
 const steps = [
   "Welcome",
@@ -44,7 +44,7 @@ const CredentialsForm = (props) => {
   const StepSlide = stepSlides[activeStep];
 
   return (
-    <div className={classes["stepper-wrapper"]}>
+    <StepperContainer>
       <Box sx={{ width: "100%" }}>
         <Stepper activeStep={activeStep}>
           {steps.map((label) => {
@@ -69,7 +69,7 @@ const CredentialsForm = (props) => {
           />
         </>
       </Box>
-    </div>
+    </StepperContainer>
   );
 };
 
